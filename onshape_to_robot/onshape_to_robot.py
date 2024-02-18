@@ -79,6 +79,9 @@ def main():
         if partIsIgnore(justPart):
             stlFile = None
         else:
+            # bypass the weird __<hash> suffixes that are added to the link name
+            if link_name.find("__") != -1:
+                link_name = link_name[:link_name.find("__")]
             stlFile = link_name + "_" + prefix.replace('/', '_')+'.stl'
             # shorten the configuration to a maximum number of chars to prevent errors. Necessary for standard parts like screws
             if len(part['configuration']) > 40:
@@ -101,9 +104,14 @@ def main():
         shapes = None
         if config['useScads']:
             scadFile = prefix+'.scad'
-            if os.path.exists(config['outputDirectory']+'/'+scadFile):
-                shapes = csg.process(
-                    config['outputDirectory']+'/'+scadFile, config['pureShapeDilatation'])
+
+            # create empty scad file if it does not exist
+            if not os.path.exists(config['outputDirectory']+'/'+scadFile):
+                print(Fore.YELLOW + 'WARNING: SCAD file ' + scadFile + ' does not exist, creating empty file' + Style.RESET_ALL)
+                with open(config['outputDirectory']+'/'+scadFile, 'w', encoding="utf-8") as stream:
+                    stream.write("")
+
+            shapes = csg.process(config['outputDirectory']+'/'+scadFile, config['pureShapeDilatation'])
 
         # Obtain metadatas about part to retrieve color
         if config['color'] is not None:
