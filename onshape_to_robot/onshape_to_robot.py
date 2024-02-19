@@ -80,8 +80,9 @@ def main():
             stlFile = None
         else:
             # bypass the weird __<hash> suffixes that are added to the link name
-            if link_name.find("__") != -1:
-                link_name = link_name[:link_name.find("__")]
+            # i.e. something like "upperleg_y_ll__list_hllkmu4rwm7vun_default"
+            if link_name.find("__list_") != -1:
+                link_name = link_name[:link_name.find("__list_")]
             stlFile = link_name + "_" + prefix.replace('/', '_')+'.stl'
             # shorten the configuration to a maximum number of chars to prevent errors. Necessary for standard parts like screws
             if len(part['configuration']) > 40:
