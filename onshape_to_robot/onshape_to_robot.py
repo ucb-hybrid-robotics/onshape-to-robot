@@ -81,8 +81,6 @@ def main():
         else:
             # bypass the weird __<hash> suffixes that are added to the link name
             # i.e. something like "upperleg_y_ll__list_hllkmu4rwm7vun_default"
-            if link_name.find("__list_") != -1:
-                link_name = link_name[:link_name.find("__list_")]
             stlFile = link_name + "_" + prefix.replace('/', '_')+'.stl'
             # shorten the configuration to a maximum number of chars to prevent errors. Necessary for standard parts like screws
             if len(part['configuration']) > 40:
@@ -207,6 +205,10 @@ def main():
         # Build a part name that is unique but still informative
         link = processPartName(
             instance['name'], instance['configuration'], occurrence['linkName'])
+        
+        if link.find("__list_") != -1:
+            link = link[:link.find("__list_")]
+            print("WARNING: fixing link name to " + link)
 
         # Create the link, collecting all children in the tree assigned to this top-level part
         robot.startLink(link, matrix)
